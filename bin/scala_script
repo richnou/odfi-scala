@@ -1,0 +1,46 @@
+#!/bin/bash
+script=${1}
+shift 1
+
+#echo "In scala script header $$"
+#echo "Script to execute: ${script}"
+
+# Try to find a classpath setup part
+USER_CLASSPATH=""
+SCALA_CP_START=`awk '/^__SCALA_CLASSPATH__/ {print NR + 1; exit 0; }' $script`
+SCALA_CP_END=`awk '/^__EOF_SCALA_CLASSPATH__/ {print NR - 1; exit 0; }' $script`
+if [[ "${SCALA_CP_START}" != "" && "${SCALA_CP_END}" != "" ]]
+then
+	SCALA_CP=`sed -n ${SCALA_CP_START},${SCALA_CP_END}p $script`
+	#echo "Found classpath definition: ${SCALA_CP}"
+	#echo "#!/usr/bin/env scala_script" >/tmp/scalacp
+	echo "${SCALA_CP}" > /tmp/scalacp.$$
+	
+	#res=`scala -Dscript.location=$(dirname ${script}) "/tmp/scalacp.$$" "$@"`
+	res=`SCRIPT_LOCATION=$(dirname ${script}) bash /tmp/scalacp.$$ "$@"`
+	#echo "CPResult: ${res}"
+	
+	## Every result line should contain a path to a folder or a jar
+	#echo "Initial User cp: ${USER_CLASSPATH}"
+	for pathComponent in ${res}
+	do
+		USER_CLASSPATH="${pathComponent}:${USER_CLASSPATH}"
+		#echo "Appending: ${pathComponent}"
+	done
+
+fi
+
+## Extract normal script part
+sed `let res=${SCALA_CP_START}-1 && echo $res`,`let res=${SCALA_CP_END}+1 && echo $res`d $script > /tmp/scalacp.$$
+
+#echo "Script to execute: `cat /tmp/scalacp.$$`"
+#echo "User CP: ${USER_CLASSPATH}"
+#echo "---"
+#echo "---"
+
+exec scala -classpath ${USER_CLASSPATH} -Dscript.location=$(dirname ${script}) /tmp/scalacp.$$ "$@"
+
+rm -f /tmp/scalacp.$$
+
+
+!#

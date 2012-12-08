@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='utf-8' ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/></head><body><h1 id="Scala_Dev_Tools">Scala Dev Tools</h1><p>This module provides an up to date installation of Scala, as well as utility scripts</p><h2 id="Calling_scala">Calling scala</h2><p>Once setup, the module adds a standard scala installation to the path.
+scalac, scala etc... should be accessible normally</p><h2 id="Scripting_Scala">Scripting Scala</h2><p>The <i>scala</i> startup script provides basic support for executing a file containing scala.
+It lacks however a very few features which are provided by the <i>scala_script</i> improvement.</p><h3 id="Writing_a_simple_script">Writing a simple script</h3><p>To write a simple scala script, simply open a file, and use this template:</p><p><code class="scala">#!/usr/bin/env scala_script
+println("This is scala here")
+</code></p><h3 id="Augmenting_the_classpath">Augmenting the classpath</h3><p>The main problem with scripting scala, is that the script starts with the default Java + Scala classpath.
+If you need some additional libraries, you could improve the classpath at runtime, but the additonal classes referenced in the script
+would prevent it from compiling.
+That is why, your classpath must be complete when starting the script.</p><p>To palliate this issue, a scala script may contain an embedded bootstrap script, which will be extracted an run prior to the main script.
+The output of this script will be parsed for lines containing references to jar or folder files, each of which will be added to the main classpath</p><h4 id="Embedded_Bootstrap_Script">Embedded Bootstrap Script</h4><p>This template provides an embedded bootstrap script</p><p><code class="scala"></p><pre> #!/usr/bin/env scala_script
+</pre><pre> __SCALA_CLASSPATH__
+</pre><pre> HERE COMES THE BOOTSTRAP SCRIPT
+</pre><pre> __EOF_SCALA_CLASSPATH__
+</pre><pre> import my.user.library.MyClass
+</pre><pre> println("This is scala here")
+</pre><p></code></p><h4 id="Example:_Scala_Bootstrap">Example: Scala Bootstrap</h4><h4 id="Example:_Bash_Bootstrap_.3D">Example: Bash Bootstrap =</h4></body></html>
