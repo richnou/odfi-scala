@@ -24,7 +24,7 @@ impossible for a script to dynamically augment its classpath.
 To solve this problem, the user can write a small bash script to gather the dependencies
 before calling the scala interpreter, something like this:
 
-<code language="scala">
+<pre>
 #!/bin/bash
 
 # Do some stuff here
@@ -34,7 +34,7 @@ USER_CLASSPATH="/path/to/lib.jar:/path/to/class/folder"
 script=${0}
 exec scala -classpath "${USER_CLASSPATH}" -Dscript.location=$(dirname ${script}) $script "$@"
 !#
-</code>
+</pre>
 
 However, most users will want this execution pattern for most of their scripts,
 so you will find here a ''scala_script'' interpreter replacement which implements this behavior.
@@ -88,11 +88,11 @@ Basic simple script
 
 To write a simple scala script, simply open a file, and use this template:
 
-
-<code class="scala">#!/usr/bin/env scala_script
+<pre>
+#!/usr/bin/env scala_script
 
 println("This is scala here")
-</code>
+</pre>
 
 Augmenting the classpath
 ----
@@ -101,11 +101,10 @@ As seen in the overview,the main problem with scripting scala, is that the scrip
 If you need some additional libraries, you can write an embedded bootstrap script, which will be extracted and run prior to the main script.
 The output of this script will be parsed for lines containing references to jar or folder files, each of which will be added to the main classpath
 
-
 This template provides an embedded bootstrap script
 
-
-<code class="scala"> #!/usr/bin/env scala_script
+<pre>
+#!/usr/bin/env scala_script
 
 _SCALA_PRELOAD_
 
@@ -121,7 +120,7 @@ import my.user.library.MyClass
 
 println("This is scala here")
 
-</code>
+</pre>
 
 == Using scala_script_daemon  ==
 
@@ -133,7 +132,8 @@ If no runner daemon is found, one is started for the current user.
 
 To use this feature simply write a script with following template:
 
-<code class="scala">#!/usr/bin/env scala_daemon_script
+<pre>
+#!/usr/bin/env scala_daemon_script
 
 println("This is scala here but compiled/run before Section 1")
 
@@ -156,7 +156,7 @@ import my.user.library.MyClass
 println("This is scala here")
   
 
-</code>
+</pre>
 
 Be aware that starting the daemon is a bit  slow, because of preloading operations,
 but this only applies to the first ever run daemon.

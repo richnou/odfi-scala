@@ -1,25 +1,90 @@
-<?xml version='1.0' encoding='utf-8' ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/></head><body><h1 id="Scala_Dev_Tools">Scala Dev Tools</h1><p>This module provides an up to date installation of Scala, as well as utility scripts</p><h2 id="Calling_scala">Calling scala</h2><p>Once setup, the module adds a standard scala installation to the path.
-scalac, scala etc... should be accessible normally</p><h2 id="Scripting_Scala">Scripting Scala</h2><p>The <i>scala</i> startup script provides basic support for executing a file containing scala.
-It lacks however a very few features which are provided by the <i>scala_script</i> improvement.</p><h3 id="Writing_a_simple_script">Writing a simple script</h3><p>To write a simple scala script, simply open a file, and use this template:</p><p><code class="scala">#!/usr/bin/env scala_script
+<?xml version='1.0' encoding='utf-8' ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/></head><body><h1 id="Scala_Dev_Tools">Scala Dev Tools</h1><p>This module provides an up to date installation of Scala, and some utilities, mainly targetted
+at using scala as a scripting facility (for command line tools for example)</p><h2 id="Calling_scala">Calling scala</h2><p>Once setup, the module adds a standard scala installation to the path.
+scalac, scala etc... should be accessible normally</p><h2 id="Scripting_Scala_tools_overview">Scripting Scala tools overview</h2><p>The <i>scala</i> startup script provides basic support for executing a file containing scala.
+This module tries however to offer some new features to ease and optimise script
+execution.</p><p>The Classpath problem
+<hr/></p><p>The main weakness of scala as a script language, is that it must compile the code, and thus,
+the required libraries have to be present on the classpath before execution, which makes
+impossible for a script to dynamically augment its classpath.</p><p>To solve this problem, the user can write a small bash script to gather the dependencies
+before calling the scala interpreter, something like this:</p><pre>
+#!/bin/bash
+
+#&#xa0;Do some stuff here
+USER_CLASSPATH="/path/to/lib.jar:/path/to/class/folder"
+
+#&#xa0;Call scala here (script.location is passed as property because it is often very useful)
+script=${0}
+exec scala -classpath "${USER_CLASSPATH}" -Dscript.location=$(dirname ${script}) $script "$@"
+!#
+</pre><p>However, most users will want this execution pattern for most of their scripts,
+so you will find here a <i>scala_script</i> interpreter replacement which implements this behavior.</p><p>Process spawing problem
+<hr/></p><p>The second weakness is that starting a script will spawn a new JVM process.
+Scala has a nice optimised compiler daemon, which makes compilation faster, but having
+an extra executor daemon written in scala could also spare the execution JVM.</p><p>A solution for this is proposed here, and also allows to define bootstrap sections in a script,
+but this time interpreted as scala code.</p><h2 id="Provided_utilities">Provided utilities</h2><p>In response to the problems exposed in the overview part, this module provides
+some very simple shebang interpreter scripts under its bin/ folder:</p><ul><li>scala_script</li></ul><p>This calls the standard <i>scala</i> interpreter, with following features:</p><ul><li><ul><li>Provides -Dscript.location with executed script location folder</li><li>Can execute an embedded bootstrap bash script which standart output is parsed to find paths to .jar</li></ul></li></ul><p>or folders to be added to main script classpath</p><ul><li>scala_script_preload</li></ul><p>This is the same as scala_script but tries to make the embedded bootstrap script executed
+by <i>scala</i> using the -i/-e argument</p><p>I AM PRETTY SURE THIS ONE IS A FAIL (missunderstood -i/-e arguments)</p><ul><li>scala_daemon_script</li></ul><p>Here the script is send to a prestarted daemon which compiles and runs the script.
+It supports defining multiple script sections executed one after each other,
+and recreate a compile in between if one section augmented its own classpath</p><h2 id="Examples">Examples</h2><p>The examples/ folder provides some basic examples for each of the provided interpreters,
+which a user can copy-paste to start writting its own script</p><h2 id="Using_scala_script">Using scala_script</h2><p>Basic simple script
+<hr/></p><p>To write a simple scala script, simply open a file, and use this template:</p><pre>
+#!/usr/bin/env scala_script
+
 println("This is scala here")
-</code></p><h3 id="Augmenting_the_classpath">Augmenting the classpath</h3><p>The main problem with scripting scala, is that the script starts with the default Java + Scala classpath.
-If you need some additional libraries, you could improve the classpath at runtime, but the additonal classes referenced in the script
-would prevent it from compiling.
-That is why, your classpath must be complete when starting the script.</p><p>To palliate this issue, a scala script may contain an embedded bootstrap script, which will be extracted an run prior to the main script.
-The output of this script will be parsed for lines containing references to jar or folder files, each of which will be added to the main classpath</p><h4 id="Embedded_Bootstrap_Script">Embedded Bootstrap Script</h4><p>This template provides an embedded bootstrap script</p><p><code class="scala"></p><pre> #!/usr/bin/env scala_script
-</pre><pre> __SCALA_CLASSPATH__
-</pre><pre> HERE COMES THE BOOTSTRAP SCRIPT
-</pre><pre> __EOF_SCALA_CLASSPATH__
-</pre><pre> import my.user.library.MyClass
-</pre><pre> println("This is scala here")
-</pre><p></code></p><h4 id="Example:_Scala_Bootstrap">Example: Scala Bootstrap</h4><h4 id="Example:_Bash_Bootstrap_.3D">Example: Bash Bootstrap =</h4><h3 id="Scala_script_daemon">Scala script daemon</h3><p>The scala script daemon is a special shee bang that allows
-sending the scala script to a runner daemon.
-If no runner daemon is found, one is started for the current user</p><p>To use this feature simply write a script with following pattern:</p><p><code class="scala"></p><pre> #!/usr/bin/env scala_daemon_script
-</pre><pre> ;----------------- Section 1
-</pre><pre> println("This is scala here but compiled/run before Section 2")
-</pre><pre> ;----------------- Section 2
-</pre><pre> import my.user.library.MyClass
-</pre><pre> println("This is scala here")
-</pre><pre> ...
-</pre><p></code></p><h4 id="Daemon_script_interpreter">Daemon script interpreter</h4><p>The daemon script interpreter works this way:</p><ul><li>Look for a unix socket in ${ODFI_DEV_SCALA_HOME}/script_runner.unix</li><li>If none is found:<ul><li>Start daemon script odfi_scala_script_runner.bash</li></ul></li><li>Send the script content to ${ODFI_DEV_SCALA_HOME}/daemon.unix using a simple UDP packet</li></ul><h4 id="Script_runner_daemon">Script runner daemon</h4><p>This is a simple scala script written with the scala_script interpreter:
-The documentation is included in the code</p></body></html>
+</pre><p>Augmenting the classpath
+<hr/></p><p>As seen in the overview,the main problem with scripting scala, is that the script starts with the default Java + Scala classpath.
+If you need some additional libraries, you can write an embedded bootstrap script, which will be extracted and run prior to the main script.
+The output of this script will be parsed for lines containing references to jar or folder files, each of which will be added to the main classpath</p><p>This template provides an embedded bootstrap script</p><pre>
+#!/usr/bin/env scala_script
+
+_SCALA_PRELOAD_
+
+
+# HERE COMES THE BOOTSTRAP BASH SCRIPT
+echo "/path/to/lib.jar"
+echo "/path/to/folder"
+
+_EOF_SCALA_PRELOAD_
+
+// This is provided by a classpath element in the PRELOAD script
+import my.user.library.MyClass
+
+println("This is scala here")
+
+</pre><h2 id="Using_scala_script_daemon">Using scala_script_daemon</h2><p>The scala script daemon is a special shee bang that allows
+sending the scala script to a runner daemon.</p><p>If no runner daemon is found, one is started for the current user.</p><p>To use this feature simply write a script with following template:</p><pre>
+#!/usr/bin/env scala_daemon_script
+
+println("This is scala here but compiled/run before Section 1")
+
+;----------------- Section 1
+
+
+println("This is scala here but compiled/run before Section 2")
+
+var path = new File(scriptLocation+"/path/to/lib.jar")
+Thread.currentThread.setContextClassLoader(new URLClassLoader(Array[URL](path.toURI.toURL),Thread.currentThread.getContextClassLoader()))
+
+println("Section 1 is augmenting classpath");
+
+
+;----------------- Section 2
+
+// Provided by a .jar loaded by section 1
+import my.user.library.MyClass
+
+println("This is scala here")
+  
+
+</pre><p>Be aware that starting the daemon is a bit  slow, because of preloading operations,
+but this only applies to the first ever run daemon.</p><h3 id="Script_sections">Script sections</h3><p>The delimiter to find the sections is simply a line starting with:</p><pre> ;-- whatever comes here
+</pre><h3 id="Daemon_script_interpreter_.28scala_script_daemon.29">Daemon script interpreter (scala_script_daemon)</h3><p>The daemon script interpreter works this way:</p><ul><li>Look for a TCP socket opened on 20000</li><li>If none is found:<ul><li>Start daemon script odfi_scala_script_runner.bash</li></ul></li><li>Send the script content to localhost:20000 using a simple netcat call</li></ul><h3 id="Script_runner_daemon">Script runner daemon</h3><p>This is a simple scala script written with the scala_script interpreter:
+The documentation is the code for now, because I am not very sure that the compile/run
+implementation is the one it should be.</p><p>The IMain + Settings classes have been used, but I don't know if that's ok</p><p>Basically, here is the process flow:</p><ul><li>Start TCP socket on 20000</li><li>Upon connection, dispatch the socket to an actor system</li><li>On socket reception by an actor:<ul><li>Read Lines from the socket using Source.</li><li>Extract first lines base on message format</li><li>Open PrintStream to pty for stdout redirection to caller terminal</li><li>For each section:<ul><li>Wrap the script in an <i>object</i>, with internal variables providing:<ul><li>var scriptLocation = "/path/to/script/folder"</li><li>var args = List<a href="String">String</a>(arguments)</li></ul></li><li>Compile the script</li><li>Interpret the script</li><li>If the current thread's classloader is now an URL classloader (inserted by the script):<ul><li>Get defined URLs and improve Settings.classpath.value</li><li>Recreate a new IMain to have the new classpath loaded</li></ul></li></ul></li><li>Close socket</li></ul></li></ul><h4 id="Script_message_format">Script message format</h4><p>The <i>scala_script_daemon</i> sends the script to the daemon using following lines format:</p><pre> --first --line=are -the -original -script=arguments
+ /path/to/user/terminal/pty
+ /path/to/original/script/location/folder
+ Content
+ of the 
+ original script
+ ...
+</pre></body></html>
