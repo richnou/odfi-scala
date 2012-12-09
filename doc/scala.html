@@ -12,4 +12,14 @@ The output of this script will be parsed for lines containing references to jar 
 </pre><pre> __EOF_SCALA_CLASSPATH__
 </pre><pre> import my.user.library.MyClass
 </pre><pre> println("This is scala here")
-</pre><p></code></p><h4 id="Example:_Scala_Bootstrap">Example: Scala Bootstrap</h4><h4 id="Example:_Bash_Bootstrap_.3D">Example: Bash Bootstrap =</h4></body></html>
+</pre><p></code></p><h4 id="Example:_Scala_Bootstrap">Example: Scala Bootstrap</h4><h4 id="Example:_Bash_Bootstrap_.3D">Example: Bash Bootstrap =</h4><h3 id="Scala_script_daemon">Scala script daemon</h3><p>The scala script daemon is a special shee bang that allows
+sending the scala script to a runner daemon.
+If no runner daemon is found, one is started for the current user</p><p>To use this feature simply write a script with following pattern:</p><p><code class="scala"></p><pre> #!/usr/bin/env scala_daemon_script
+</pre><pre> ;----------------- Section 1
+</pre><pre> println("This is scala here but compiled/run before Section 2")
+</pre><pre> ;----------------- Section 2
+</pre><pre> import my.user.library.MyClass
+</pre><pre> println("This is scala here")
+</pre><pre> ...
+</pre><p></code></p><h4 id="Daemon_script_interpreter">Daemon script interpreter</h4><p>The daemon script interpreter works this way:</p><ul><li>Look for a unix socket in ${ODFI_DEV_SCALA_HOME}/script_runner.unix</li><li>If none is found:<ul><li>Start daemon script odfi_scala_script_runner.bash</li></ul></li><li>Send the script content to ${ODFI_DEV_SCALA_HOME}/daemon.unix using a simple UDP packet</li></ul><h4 id="Script_runner_daemon">Script runner daemon</h4><p>This is a simple scala script written with the scala_script interpreter:
+The documentation is included in the code</p></body></html>

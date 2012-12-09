@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# Scala daemon script, usage under doc/scala.mediawiki || html
+
+## Try to find a scala script daemon (test tcp port 20000 using netcat)
+# If not found -> start
+loc="$(dirname "$(readlink -f ${BASH_SOURCE[0]})")"
+socket=$(nc -z localhost 20000; echo $?)
+if [[ $socket == 1 ]]
+then
+	
+	echo "[Scala Script] No script runner daemon found, starting one"
+	exit -1
+	odfi_scala_script_runner.bash > /dev/null &
+	nc -tzw 10 localhost 20000
+fi
+	
+
+## Gather current run environment informations
+#  - console file (pty)
+#  - script content
+#  - script location
+consoleFile="`tty`"
+scriptContent=`tail -n +2 $1`
+scriptLocation=`cd $(dirname $1) && pwd`
+
+## Shifting to have $@ now be the original script arguments
+shift
+
+## Buildup message to server
+message="$@
+${consoleFile}
+${scriptLocation}
+$scriptContent
+"
+## Dispatch to daemon
+echo "$message" | nc -t localhost 20000
+
+
+
+

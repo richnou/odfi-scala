@@ -1,0 +1,11 @@
+./daemon-example.bash
+		// Console file for io redirection
+		var consoleFile= "/dev/pts/5"
+		var out = new java.io.PrintStream(consoleFile)
+		//java.lang.System.setOut(out);
+		Console.withOut(out) {
+			
+println("This script is compiled/run by the script runner daemon");
+out.println("This goes to original caller")
+		}
+	

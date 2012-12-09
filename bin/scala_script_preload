@@ -2,6 +2,8 @@
 script=${1}
 shift 1
 
+echo "[Scala SCript] ATTENTION, I THINK THIS TOOL IS A FAIL"
+
 #echo "In scala script header $$"
 #echo "Script to execute: ${script}"
 
@@ -15,15 +17,16 @@ then
 	echo "${SCALA_PRELOAD}" > /tmp/scalacp.preload.$$
 	#echo "${SCALA_PRELOAD}"
 
-	res=`SCRIPT_LOCATION=$(cd $(dirname ${script}) && pwd) bash /tmp/scalacp.preload.$$ "$@"`
-	rm -f /tmp/scalacp.preload.$$
+	#res=`SCRIPT_LOCATION=$(dirname ${script}) bash /tmp/scalacp.$$ "$@"`
+	
 	
 	## Every result line should contain a path to a folder or a jar
 
-	for pathComponent in ${res}
-	do
-			USER_CLASSPATH="${pathComponent}:${USER_CLASSPATH}"
-	done
+	#for pathComponent in ${res}
+	#do
+		#	USER_CLASSPATH="${pathComponent}:${USER_CLASSPATH}"
+		
+	#done
 
 fi
 
@@ -35,14 +38,14 @@ then
 	sed `let res=${SCALA_CP_START}-1 && echo $res`,`let res=${SCALA_CP_END}+1 && echo $res`d $script | tail -n +2 > /tmp/scalacp.$$
 
 	#echo "Script to execute: `cat /tmp/scalacp.$$`"
-	echo "User CP: ${USER_CLASSPATH}"
+	#echo "User CP: ${USER_CLASSPATH}"
 	#echo "---"
 	#echo "---"
 
 	#exec scala -i /tmp/scalacp.preload.$$ -Dscript.location=$(dirname ${script}) /tmp/scalacp.$$ "$@"
 
-	exec scala -classpath "${USER_CLASSPATH}" -Dscript.location=$(dirname ${script}) /tmp/scalacp.$$ "$@"
-	rm -f /tmp/scalacp.$$
+	exec scala -e "$SCALA_PRELOAD" -Dscript.location=$(dirname ${script}) /tmp/scalacp.$$ "$@"
+	rm -f /tmp/scalacp.preload.$$
 	
 else
 	
@@ -50,7 +53,7 @@ else
 	
 fi
 
-
+rm -f /tmp/scalacp.$$
 
 
 !#
