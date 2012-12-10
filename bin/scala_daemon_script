@@ -10,6 +10,7 @@ if [[ $socket == 1 ]]
 then
 	
 	echo "[Scala Script] No script runner daemon found, starting one"
+	echo "[Scala_Script] In development mode, please start bin/odfi_scala_script_runner.bash per hand"
 	exit -1
 	odfi_scala_script_runner.bash > /dev/null &
 	nc -tzw 10 localhost 20000
