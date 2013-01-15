@@ -6,17 +6,13 @@ execution.</p><p>The Classpath problem
 <hr/></p><p>The main weakness of scala as a script language, is that it must compile the code, and thus,
 the required libraries have to be present on the classpath before execution, which makes
 impossible for a script to dynamically augment its classpath.</p><p>To solve this problem, the user can write a small bash script to gather the dependencies
-before calling the scala interpreter, something like this:</p><pre>
-#!/bin/bash
-
-#&#xa0;Do some stuff here
-USER_CLASSPATH="/path/to/lib.jar:/path/to/class/folder"
-
-#&#xa0;Call scala here (script.location is passed as property because it is often very useful)
-script=${0}
-exec scala -classpath "${USER_CLASSPATH}" -Dscript.location=$(dirname ${script}) $script "$@"
-!#
-</pre><p>However, most users will want this execution pattern for most of their scripts,
+before calling the scala interpreter, something like this:</p><p><code>
+	#!/bin/bash</p><p>	#&#xa0;Do some stuff here
+	USER_CLASSPATH="/path/to/lib.jar:/path/to/class/folder"</p><p>	#&#xa0;Call scala here (script.location is passed as property because it is often very useful)
+	script=${0}
+	exec scala -classpath "${USER_CLASSPATH}" -Dscript.location=$(dirname ${script}) $script "$@"
+	!#
+</code></p><p>However, most users will want this execution pattern for most of their scripts,
 so you will find here a <i>scala_script</i> interpreter replacement which implements this behavior.</p><p>Process spawing problem
 <hr/></p><p>The second weakness is that starting a script will spawn a new JVM process.
 Scala has a nice optimised compiler daemon, which makes compilation faster, but having

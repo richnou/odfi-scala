@@ -30,7 +30,7 @@ then
 	#mandb -uq $scalaPath/man/
 fi
 
-## Setup ourselves if in standalone modus
+## Setup ourselves if in standalone modus
 if [[ ! -n ${ODFI_MANAGED} ]]
 then
 	export PATH="$loc/bin:$PATH"

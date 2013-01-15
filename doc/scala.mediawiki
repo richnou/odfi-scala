@@ -24,7 +24,7 @@ impossible for a script to dynamically augment its classpath.
 To solve this problem, the user can write a small bash script to gather the dependencies
 before calling the scala interpreter, something like this:
 
-<pre>
+<code>
 #!/bin/bash
 
 # Do some stuff here
@@ -34,7 +34,7 @@ USER_CLASSPATH="/path/to/lib.jar:/path/to/class/folder"
 script=${0}
 exec scala -classpath "${USER_CLASSPATH}" -Dscript.location=$(dirname ${script}) $script "$@"
 !#
-</pre>
+</code>
 
 However, most users will want this execution pattern for most of their scripts,
 so you will find here a ''scala_script'' interpreter replacement which implements this behavior.
