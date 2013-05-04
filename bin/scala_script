@@ -19,10 +19,10 @@ then
 	rm -f /tmp/scalacp.preload.$$
 	
 	## Every result line should contain a path to a folder or a jar
-	echo "PRELOADRES: $res"
+	#echo "PRELOADRES: $res"
 	for pathComponent in ${res}
 	do
-			echo "CPELT: ------"
+			#echo "CPELT: ${pathComponent}"
 			USER_CLASSPATH="${pathComponent}:${USER_CLASSPATH}:"
 	done
 
