@@ -10,11 +10,12 @@ SBT_VERSION   ?= 0.12.3
 odfi_setup: scala sbt
 
 scala: scala-$(SCALA_VERSION)/bin/scala
-scala-$(SCALA_VERSION)/bin/scala: scala-$(SCALA_VERSION).tar.gz
-scala-$(SCALA_VERSION).tar.gz:
+scala-$(SCALA_VERSION)/bin/scala: scala-$(SCALA_VERSION).tgz
+	@tar xvaf scala-$(SCALA_VERSION).tgz
+scala-$(SCALA_VERSION).tgz:
 	@echo "Downloading scala using wget and unpacking"
 	@wget http://www.scala-lang.org/downloads/distrib/files/scala-$(SCALA_VERSION).tgz
-	@tar xvaf $(SCALA_VERSION).tgz
+
 
 
 sbt: sbt-$(SBT_VERSION)/sbt sbt-$(SBT_VERSION)/sbt-launch.jar
