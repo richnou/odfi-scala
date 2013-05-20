@@ -3,7 +3,7 @@ script=${1}
 shift 1
 
 #echo "In scala script header $$"
-echo "Script to execute: ${script}"
+#echo "Script to execute: ${script}"
 
 # Try to find a preload part
 SCALA_CP_START=`awk '/^_SCALA_PRELOAD_/ {print NR + 1; exit 0; }' $script`
@@ -42,12 +42,12 @@ then
 
 	#exec scala -i /tmp/scalacp.preload.$$ -Dscript.location=$(dirname ${script}) /tmp/scalacp.$$ "$@"
 
-	exec scala -nc -classpath "${USER_CLASSPATH}" -Dscript.location=$(dirname ${script}) /tmp/scalacp.$$ "$@"
+	exec scala -classpath "${USER_CLASSPATH}" -Dscript.location=$(dirname ${script}) /tmp/scalacp.$$ "$@"
 	rm -f /tmp/scalacp.$$
 	
 else
 	
-	exec scala -nc -classpath "${USER_CLASSPATH}" -Dscript.location=$(dirname ${script}) ${script} "$@"
+	exec scala -classpath "${USER_CLASSPATH}" -Dscript.location=$(dirname ${script}) ${script} "$@"
 	
 fi
 
