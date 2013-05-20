@@ -34,6 +34,7 @@ fi
 ###################
 SBT_VERSION="0.12.3"
 sbtPath="$loc/external/sbt-${SBT_VERSION}"
+sbtCustomPath="$loc/external/sbt-custom"
 if [[ ! -f ${sbtPath}/sbt ]]
 then
 
@@ -41,7 +42,13 @@ then
 	SBT_VERSION=${SBT_VERSION} make -C $loc/external sbt
 fi
 
-if [[ -d $sbtPath ]]
+if [[ -f ${sbtCustomPath}/sbt-custom ]]
+then
+
+
+	export PATH=$sbtCustomPath/:$PATH
+
+elif [[ -d $sbtPath ]]
 then
 	export PATH=$sbtPath/:$PATH
 fi
