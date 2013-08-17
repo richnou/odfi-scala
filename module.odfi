@@ -48,7 +48,41 @@ setup {
     set SBT_VERSION "0.12.3"
     set sbtPath     "$path/external/sbt-${SBT_VERSION}"
 
+    ## Zync
+    #########################
+    set zyncVersion "0.2.5"
+    set zyncPath "$path/external/zync-$zyncVersion"
 
+    odfi::os::onOs {
+
+        linux* {
+
+            ## If no Zync is present
+            ##  - Download
+            ##  - Extract
+            ######
+            if {![file exists $zyncPath/bin/zync]} {
+
+                ## Download
+                if {![file exists ${zyncPath}.tgz]} {
+                    exec mkdir -p $zyncPath
+                    puts [exec wget http://repo.typesafe.com/typesafe/zinc/com/typesafe/zinc/dist/0.2.5/zinc-$zyncVersion.tgz -O ${zyncPath}.tgz]
+                }
+
+                ## Extract
+                set cdir [pwd]
+                cd $path/external
+                puts [exec tar xvf ${zyncPath}.tgz]
+                cd $cdir
+            }
+
+
+
+
+        }
+    }
+
+    
 
 }
 
@@ -56,5 +90,19 @@ setup {
 ## Load
 #################
 load {
+    
+    ## Scala
+    #################
+    set SCALA_VERSION "2.10.1"
+    set scalaPath     "$path/external/scala-${SCALA_VERSION}"
+
+    $loadResult env PATH ${scalaPath}/bin/
+
+    ## Zync
+    ##############
+    set zyncVersion "0.2.5"
+    set zyncPath "$path/external/zync-$zyncVersion"
+
+    $loadResult env PATH ${zyncPath}/bin/
 
 }
