@@ -25,8 +25,10 @@ setup {
             if {![file exists $scalaPath/bin/scala]} {
 
                 ## Download
-                exec mkdir -p $scalaPath
-                puts [exec wget http://www.scala-lang.org/files/archive/scala-${SCALA_VERSION}.tgz -O ${scalaPath}.tgz]
+                if {![file exists ${scalaPath}.tgz]} {
+			exec mkdir -p $scalaPath
+                	puts [exec wget http://www.scala-lang.org/files/archive/scala-${SCALA_VERSION}.tgz -O ${scalaPath}.tgz]
+		}
 
                 ## Extract
                 set cdir [pwd]
