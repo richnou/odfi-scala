@@ -51,7 +51,7 @@ setup {
     ## Zync
     #########################
     set zyncVersion "0.2.5"
-    set zyncPath "$path/external/zync-$zyncVersion"
+    set zyncPath "$path/external/zinc-$zyncVersion"
 
     odfi::os::onOs {
 
@@ -61,7 +61,7 @@ setup {
             ##  - Download
             ##  - Extract
             ######
-            if {![file exists $zyncPath/bin/zync]} {
+            if {![file exists $zyncPath/bin/zinc]} {
 
                 ## Download
                 if {![file exists ${zyncPath}.tgz]} {
@@ -101,7 +101,7 @@ load {
     ## Zync
     ##############
     set zyncVersion "0.2.5"
-    set zyncPath "$path/external/zync-$zyncVersion"
+    set zyncPath "$path/external/zinc-$zyncVersion"
 
     $loadResult env PATH ${zyncPath}/bin/
 
