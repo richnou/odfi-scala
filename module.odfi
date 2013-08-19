@@ -26,7 +26,10 @@ setup {
 
                 ## Download
                 exec mkdir -p $scalaPath
-                puts [exec wget http://www.scala-lang.org/downloads/distrib/files/scala-${SCALA_VERSION}.tgz -O ${scalaPath}.tgz]
+
+                odfi::common::execCommand "wget http://www.scala-lang.org/downloads/distrib/files/scala-${SCALA_VERSION}.tgz -O ${scalaPath}.tgz"
+
+                #puts [exec wget http://www.scala-lang.org/downloads/distrib/files/scala-${SCALA_VERSION}.tgz -O ${scalaPath}.tgz]
 
                 ## Extract
                 set cdir [pwd]
@@ -54,5 +57,14 @@ setup {
 ## Load
 #################
 load {
+
+    ## Scala
+    #################
+    set SCALA_VERSION "2.10.1"
+    set scalaPath     "$path/external/scala-${SCALA_VERSION}"
+
+    $loadResult env PATH ${scalaPath}/bin/
+
+
 
 }
