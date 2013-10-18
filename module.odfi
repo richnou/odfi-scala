@@ -11,7 +11,7 @@ setup {
 
     ## Scala
     #################
-    set SCALA_VERSION "2.10.1"
+    set SCALA_VERSION "2.10.2"
     set scalaPath     "$path/external/scala-${SCALA_VERSION}"
 
     odfi::os::onOs {
@@ -93,7 +93,7 @@ load {
     
     ## Scala
     #################
-    set SCALA_VERSION "2.10.1"
+    set SCALA_VERSION "2.10.2"
     set scalaPath     "$path/external/scala-${SCALA_VERSION}"
 
     $loadResult env PATH ${scalaPath}/bin/
@@ -104,14 +104,5 @@ load {
     set zyncPath "$path/external/zinc-$zyncVersion"
 
     $loadResult env PATH ${zyncPath}/bin/
-
-    ## Scala
-    #################
-    set SCALA_VERSION "2.10.1"
-    set scalaPath     "$path/external/scala-${SCALA_VERSION}"
-
-    $loadResult env PATH ${scalaPath}/bin/
-
-
 
 }
