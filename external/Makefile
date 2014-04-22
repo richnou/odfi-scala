@@ -17,7 +17,6 @@ scala-$(SCALA_VERSION).tgz:
 	@wget http://www.scala-lang.org/downloads/distrib/files/scala-$(SCALA_VERSION).tgz
 
 
-
 sbt: sbt-$(SBT_VERSION)/sbt sbt-$(SBT_VERSION)/sbt-launch.jar
 sbt-$(SBT_VERSION)/sbt-launch.jar:
 	@echo "Getting SBT version tag: $(SBT_VERSION)"
