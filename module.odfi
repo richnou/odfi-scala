@@ -100,9 +100,13 @@ load {
 
     ## Zync
     ##############
-    set zyncVersion "0.2.5"
+    set zyncVersion "0.3.5.1"
     set zyncPath "$path/external/zinc-$zyncVersion"
 
     $loadResult env PATH ${zyncPath}/bin/
+
+    ## Visual VM
+    ####################
+    $loadResult env PATH "$path/external/visualvm_136/bin"
 
 }

@@ -1,0 +1,74 @@
+#!/usr/bin/env tclsh
+
+
+## Definition Input 
+##############################
+puts "Enter an input, and press CTRL+D to end: "
+set input [read stdin]
+puts "-------------------------"
+
+## Regexp
+################
+set r {([\w\._]+)\s+ ([\w_]+)\s* \( ( .* ) \) .*}
+
+
+
+## Main
+##  Go through input lines
+###################
+set lines [split $input \n]
+foreach line $lines {
+
+    ## Analyse with regexp and return list of captured groups
+    if {[regexp -expanded $r $line -> returnType name arguments]} {
+
+       # puts "Name: $name"
+       # puts "Return Type. $returnType"
+       # puts "Arguments: $arguments"
+
+        ## Args clean. Make sure there are spaces around ,
+        set arguments [string map {, " , "} $arguments]
+
+        ## Convert 
+        #############
+
+        ## Name
+        set res "def $name"
+
+        ## OPEN PAR If some arguments 
+        if {$arguments!=""} {
+            set res "$res\( "
+        }
+
+        ## Args 
+        set newArgs {}
+        foreach {type name comma} $arguments {
+            #set res "$res$name : $type "
+            lappend newArgs [list $name : $type]
+        }
+        set res "$res[join $newArgs ,] "
+
+        ## CLOSE PAR if some arguments 
+        if {$arguments!=""} {
+            set res "$res\)"
+        }
+
+        ## Return Type 
+        switch -exact -- $returnType {
+            "void" {
+                set returnType "Unit"
+            }
+            default {
+                set returnType $returnType
+            }
+        }
+        set res "$res: $returnType"
+
+        ## Result
+        puts "$res"
+    }
+    #set argsList [regexp -expanded -inline -all $argsR]
+    #puts "ArgsList"
+
+}
+
